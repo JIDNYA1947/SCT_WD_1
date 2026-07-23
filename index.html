@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExploreX — Travel Beyond The Map</title>
+<meta name="description" content="ExploreX helps you discover destinations, book adventures, and explore experiences around the world.">
+
+<!-- Fonts: Fraunces (display), Inter (body/UI), JetBrains Mono (coordinates & labels) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Journey line: a hand-drawn dashed route that runs down the page, with a plane marker that travels along it as you scroll -->
+<svg class="journey-line" id="journeyLine" viewBox="0 0 4 4000" preserveAspectRatio="none" aria-hidden="true">
+  <path id="journeyPath" d="M2,0 C 60,300 -55,600 2,900 C 55,1200 -50,1500 2,1900 C 50,2200 -45,2600 2,3000 C 45,3300 -40,3600 2,4000" />
+</svg>
+<div class="journey-marker" id="journeyMarker">✈</div>
+
+<!-- Ambient particle canvas (subtle floating dust/stars over dark sections) -->
+<canvas id="particles"></canvas>
+
+<!-- ================= NAVBAR ================= -->
+<header class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="#home" class="logo">
+      <span class="logo-mark">✦</span>
+      Explore<em>X</em>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#home" class="nav-link active">Home</a>
+      <a href="#destinations" class="nav-link">Destinations</a>
+      <a href="#adventures" class="nav-link">Adventures</a>
+      <a href="#packages" class="nav-link">Packages</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle light / dark mode">
+        <span class="theme-icon">☾</span>
+      </button>
+      <button class="btn btn-primary btn-sm" id="bookNowNav">Book Now</button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile menu overlay -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" class="mobile-link">Home</a>
+  <a href="#destinations" class="mobile-link">Destinations</a>
+  <a href="#adventures" class="mobile-link">Adventures</a>
+  <a href="#packages" class="mobile-link">Packages</a>
+  <a href="#about" class="mobile-link">About</a>
+  <a href="#contact" class="mobile-link">Contact</a>
+  <button class="btn btn-primary" id="bookNowMobile">Book Now</button>
+</div>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="home">
+  <div class="hero-slider" id="heroSlider">
+    <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1920&auto=format&fit=crop')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1920&auto=format&fit=crop')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1920&auto=format&fit=crop')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1440581572325-0bea30075d9d?q=80&w=1920&auto=format&fit=crop')"></div>
+  </div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-slide-dots" id="sliderDots"></div>
+
+  <div class="hero-content">
+    <p class="eyebrow mono">40°42′N · 74°00′W — SOMEWHERE, EVERYWHERE</p>
+    <h1 class="hero-title">
+      <span class="line">Discover The World</span>
+      <span class="line">Beyond Your <em>Imagination</em></span>
+    </h1>
+    <p class="hero-subtitle">Explore breathtaking destinations and unforgettable adventures, curated for travelers who'd rather wander than wait.</p>
+
+    <div class="hero-actions">
+      <a href="#destinations" class="btn btn-primary">Explore Now</a>
+      <button class="btn btn-ghost" id="startJourneyBtn">Start Your Journey</button>
+    </div>
+
+    <div class="hero-scroll-cue">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+
+  <!-- floating postcard chips -->
+  <div class="floating-chip chip-1">📍 Kyoto, Japan</div>
+  <div class="floating-chip chip-2">🌊 Bora Bora</div>
+  <div class="floating-chip chip-3">⛰️ Patagonia</div>
+</section>
+
+<!-- ================= STATS STRIP ================= -->
+<section class="stats-strip">
+  <div class="stats-container">
+    <div class="stat">
+      <span class="stat-number" data-count="128">0</span><span class="stat-suffix">+</span>
+      <p>Destinations Mapped</p>
+    </div>
+    <div class="stat">
+      <span class="stat-number" data-count="54000">0</span><span class="stat-suffix">+</span>
+      <p>Travelers Guided</p>
+    </div>
+    <div class="stat">
+      <span class="stat-number" data-count="312">0</span><span class="stat-suffix">+</span>
+      <p>Guided Expeditions</p>
+    </div>
+    <div class="stat">
+      <span class="stat-number" data-count="12">0</span>
+      <p>Years On The Trail</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DESTINATIONS ================= -->
+<section class="section" id="destinations">
+  <div class="section-container">
+    <p class="eyebrow mono reveal">— THE ATLAS</p>
+    <h2 class="section-title reveal">Pick your next coordinates</h2>
+    <p class="section-desc reveal">Six terrains, one shared instinct: go further. Search the atlas or browse the terrain that's calling you.</p>
+
+    <div class="search-bar reveal">
+      <input type="text" id="destinationSearch" placeholder="Search a destination — try “beach” or “desert”…">
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="card-grid" id="destinationGrid">
+
+      <article class="dest-card reveal" data-name="mountains switzerland alps">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop')"></div>
+        <span class="postmark mono">46°49′N</span>
+        <div class="dest-body">
+          <h3>Mountains — Swiss Alps</h3>
+          <p>Jagged peaks, alpine lakes, and trails that end at the clouds.</p>
+          <button class="link-btn explore-btn">Explore Trails →</button>
+        </div>
+      </article>
+
+      <article class="dest-card reveal" data-name="beaches maldives islands">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop')"></div>
+        <span class="postmark mono">03°12′N</span>
+        <div class="dest-body">
+          <h3>Beaches — Maldives</h3>
+          <p>Turquoise shallows, overwater villas, and horizons with no edge.</p>
+          <button class="link-btn explore-btn">Explore Shores →</button>
+        </div>
+      </article>
+
+      <article class="dest-card reveal" data-name="forest adventures amazon rainforest">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1000&auto=format&fit=crop')"></div>
+        <span class="postmark mono">03°06′S</span>
+        <div class="dest-body">
+          <h3>Forest Adventures — Amazon</h3>
+          <p>Dense canopy, hidden wildlife, and trails scored by birdsong.</p>
+          <button class="link-btn explore-btn">Explore Canopy →</button>
+        </div>
+      </article>
+
+      <article class="dest-card reveal" data-name="desert safari sahara dunes">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?q=80&w=1000&auto=format&fit=crop')"></div>
+        <span class="postmark mono">23°25′N</span>
+        <div class="dest-body">
+          <h3>Desert Safari — Sahara</h3>
+          <p>Endless dunes, star-thick skies, and camps that vanish by morning.</p>
+          <button class="link-btn explore-btn">Explore Dunes →</button>
+        </div>
+      </article>
+
+      <article class="dest-card reveal" data-name="island escape bora bora">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=1000&auto=format&fit=crop')"></div>
+        <span class="postmark mono">16°30′S</span>
+        <div class="dest-body">
+          <h3>Island Escape — Bora Bora</h3>
+          <p>A lagoon so blue it looks retouched — it isn't.</p>
+          <button class="link-btn explore-btn">Explore Lagoon →</button>
+        </div>
+      </article>
+
+      <article class="dest-card reveal" data-name="cultural tours kyoto japan">
+        <div class="dest-img" style="background-image:url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop')"></div>
+        <span class="postmark mono">35°01′N</span>
+        <div class="dest-body">
+          <h3>Cultural Tours — Kyoto</h3>
+          <p>Temple bells, lantern streets, and centuries kept carefully alive.</p>
+          <button class="link-btn explore-btn">Explore Culture →</button>
+        </div>
+      </article>
+
+    </div>
+    <p class="no-results mono" id="noResults">No destinations match that search — try “island” or “forest”.</p>
+  </div>
+</section>
+
+<!-- ================= ADVENTURES ================= -->
+<section class="section section-dark" id="adventures">
+  <div class="section-container">
+    <p class="eyebrow mono reveal">— THE FIELD MANUAL</p>
+    <h2 class="section-title light reveal">Choose how you move through the world</h2>
+    <p class="section-desc light reveal">Five ways to raise your pulse, each led by guides who've done it a thousand times over.</p>
+
+    <div class="adventure-grid">
+      <div class="adventure-card reveal">
+        <div class="adventure-icon">🥾</div>
+        <h3>Trekking</h3>
+        <p>Multi-day routes through ridgelines and river valleys, paced for every level.</p>
+      </div>
+      <div class="adventure-card reveal">
+        <div class="adventure-icon">🤿</div>
+        <h3>Scuba Diving</h3>
+        <p>Reef walls, wrecks, and blue holes — certified guides, unforgettable depths.</p>
+      </div>
+      <div class="adventure-card reveal">
+        <div class="adventure-icon">⛺</div>
+        <h3>Camping</h3>
+        <p>Fires under open skies, from alpine meadows to desert basins.</p>
+      </div>
+      <div class="adventure-card reveal">
+        <div class="adventure-icon">🦁</div>
+        <h3>Wildlife Safari</h3>
+        <p>Dawn game drives across savannah where the animals set the schedule.</p>
+      </div>
+      <div class="adventure-card reveal">
+        <div class="adventure-icon">🪂</div>
+        <h3>Sky Diving</h3>
+        <p>Freefall over coastlines and canyons — the fastest way to see it all.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PARALLAX BAND ================= -->
+<section class="parallax-band" id="parallaxBand">
+  <div class="parallax-layer" data-speed="0.3" style="background-image:url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1920&auto=format&fit=crop')"></div>
+  <div class="parallax-content">
+    <p class="mono eyebrow">— THE LONG WAY ROUND</p>
+    <h2>Some places aren't a stop. They're the reason for the trip.</h2>
+  </div>
+</section>
+
+<!-- ================= PACKAGES ================= -->
+<section class="section" id="packages">
+  <div class="section-container">
+    <p class="eyebrow mono reveal">— THE ITINERARY</p>
+    <h2 class="section-title reveal">Travel packages, built for how you roam</h2>
+    <p class="section-desc reveal">Three tiers, no fine print. Every package includes guiding, permits, and 24/7 support in the field.</p>
+
+    <div class="pricing-grid">
+
+      <div class="price-card reveal">
+        <h3>Basic Adventure</h3>
+        <p class="price-duration mono">5 Days / 4 Nights</p>
+        <div class="price-amount"><span>$</span>499<span class="per">/ person</span></div>
+        <ul class="price-features">
+          <li>✓ Single destination itinerary</li>
+          <li>✓ Shared group guiding</li>
+          <li>✓ Standard lodging</li>
+          <li>✓ Airport transfers</li>
+        </ul>
+        <button class="btn btn-outline book-package" data-package="Basic Adventure">Book Now</button>
+      </div>
+
+      <div class="price-card featured reveal">
+        <span class="badge">Most Popular</span>
+        <h3>Premium Explorer</h3>
+        <p class="price-duration mono">9 Days / 8 Nights</p>
+        <div class="price-amount"><span>$</span>1,299<span class="per">/ person</span></div>
+        <ul class="price-features">
+          <li>✓ Two-destination route</li>
+          <li>✓ Private guide, small group</li>
+          <li>✓ Boutique lodging</li>
+          <li>✓ All meals + gear rental</li>
+          <li>✓ One adventure activity included</li>
+        </ul>
+        <button class="btn btn-primary book-package" data-package="Premium Explorer">Book Now</button>
+      </div>
+
+      <div class="price-card reveal">
+        <h3>Luxury World Tour</h3>
+        <p class="price-duration mono">21 Days / 20 Nights</p>
+        <div class="price-amount"><span>$</span>4,950<span class="per">/ person</span></div>
+        <ul class="price-features">
+          <li>✓ Multi-continent routing</li>
+          <li>✓ Dedicated private guide</li>
+          <li>✓ 5-star + boutique stays</li>
+          <li>✓ Private transfers & charters</li>
+          <li>✓ All activities included</li>
+        </ul>
+        <button class="btn btn-outline book-package" data-package="Luxury World Tour">Book Now</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="section section-alt" id="about">
+  <div class="section-container about-grid">
+    <div class="about-media reveal">
+      <img src="https://images.unsplash.com/photo-1530521954074-e64f6810b32d?q=80&w=900&auto=format&fit=crop" alt="Guide reading a map on a mountain trail">
+    </div>
+    <div class="about-text reveal">
+      <p class="eyebrow mono">— WHO WE ARE</p>
+      <h2 class="section-title">A travel platform run by people who never stopped wandering</h2>
+      <p>ExploreX started as three friends sharing dog-eared maps and worse directions. Twelve years on, we're a network of local guides and route-planners across six continents — the kind who know which ridge catches sunrise, and which market stall not to skip.</p>
+      <p>We don't sell postcards. We hand you the pen.</p>
+      <a href="#contact" class="link-btn">Meet the guides →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="section" id="testimonials">
+  <div class="section-container">
+    <p class="eyebrow mono reveal">— FIELD NOTES</p>
+    <h2 class="section-title reveal">Dispatches from the road</h2>
+
+    <div class="testimonial-track" id="testimonialTrack">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p>"Our guide in Patagonia knew every switchback by name. This wasn't a tour — it felt like being let in on a secret."</p>
+        <div class="reviewer">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" alt="Amara Okafor">
+          <div><strong>Amara Okafor</strong><span class="mono">Patagonia Trek</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p>"Booked the Premium Explorer on a whim. Ended up diving a reef I'll be describing badly to friends for years."</p>
+        <div class="reviewer">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" alt="Daniel Reyes">
+          <div><strong>Daniel Reyes</strong><span class="mono">Maldives Dive</span></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★☆</div>
+        <p>"The Sahara camp at night is the single best sky I've ever seen. Logistics were flawless start to finish."</p>
+        <div class="reviewer">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" alt="Priya Nair">
+          <div><strong>Priya Nair</strong><span class="mono">Sahara Safari</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-dots" id="testimonialDots"></div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="section section-dark" id="contact">
+  <div class="section-container contact-grid">
+    <div class="contact-info reveal">
+      <p class="eyebrow mono">— BASE CAMP</p>
+      <h2 class="section-title light">Plan your route with us</h2>
+      <p class="light-muted">Questions about a trip, a custom itinerary, or just where to point the compass next — reach out.</p>
+      <ul class="contact-list">
+        <li>✉️ <a href="mailto:hello@explorex.travel">hello@explorex.travel</a></li>
+        <li>📞 <a href="tel:+18005551234">+1 (800) 555‑1234</a></li>
+        <li>📍 14 Basecamp Row, Denver, CO</li>
+      </ul>
+      <div class="social-icons">
+        <a href="#" aria-label="Instagram">📷</a>
+        <a href="#" aria-label="Twitter / X">🕊️</a>
+        <a href="#" aria-label="Facebook">📘</a>
+        <a href="#" aria-label="YouTube">▶️</a>
+      </div>
+    </div>
+
+    <form class="contact-form reveal" id="contactForm">
+      <div class="form-row">
+        <input type="text" placeholder="Full name" required>
+        <input type="email" placeholder="Email address" required>
+      </div>
+      <input type="text" placeholder="Subject">
+      <textarea rows="5" placeholder="Tell us where you'd like to go…" required></textarea>
+      <button type="submit" class="btn btn-primary">Send Message</button>
+      <p class="form-note mono" id="contactNote"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-col">
+      <a href="#home" class="logo footer-logo">
+        <span class="logo-mark">✦</span>Explore<em>X</em>
+      </a>
+      <p>Travel further, plan lighter. A platform for people who read maps for fun.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="#home">Home</a>
+      <a href="#destinations">Destinations</a>
+      <a href="#packages">Packages</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Categories</h4>
+      <a href="#adventures">Trekking</a>
+      <a href="#adventures">Scuba Diving</a>
+      <a href="#adventures">Wildlife Safari</a>
+      <a href="#adventures">Sky Diving</a>
+    </div>
+    <div class="footer-col">
+      <h4>Newsletter</h4>
+      <p>Get new routes before they're on the map.</p>
+      <form class="footer-form" id="newsletterForm">
+        <input type="email" placeholder="you@email.com" required>
+        <button type="submit">→</button>
+      </form>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <span id="year"></span> ExploreX. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ================= BOOKING MODAL ================= -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <p class="eyebrow mono">— RESERVE YOUR SPOT</p>
+    <h3 id="modalTitle">Book Your Adventure</h3>
+    <form id="bookingForm">
+      <input type="text" placeholder="Full name" required>
+      <input type="email" placeholder="Email address" required>
+      <div class="form-row">
+        <input type="date" required>
+        <select id="modalPackageSelect">
+          <option>Basic Adventure</option>
+          <option>Premium Explorer</option>
+          <option>Luxury World Tour</option>
+        </select>
+      </div>
+      <textarea rows="3" placeholder="Any special requests?"></textarea>
+      <button type="submit" class="btn btn-primary">Confirm Booking</button>
+    </form>
+    <p class="modal-success mono" id="modalSuccess">✓ Request received — we'll email your itinerary shortly.</p>
+  </div>
+</div>
+
+<!-- Back to top -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script src="js/script.js"></script>
+</body>
+</html>
